@@ -1,0 +1,37 @@
+﻿
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>评价</h2>
+<tr>
+    <td>评价内容:</td>
+    <td><input id="gong" type="text" /></td>
+</tr>
+<tr>
+    <td><input id="Button1" type="button" value="确定" onclick="Create()" /></td>
+</tr>
+@section scripts{
+    <script>
+        //添加
+        function Create() {
+            var obj = {};
+            obj.Rinfo = $("#Rinfo").val();
+            $.ajax({
+                url: "http://localhost:51828/api/stu",
+                type: "post",
+                dataType: "json",
+                data: obj,
+                success: function (d) {
+                    if (d > 0) {
+                        alert("评价成功");
+                        filUpoad();
+                        location.href = '/User/Show';
+                    } else {
+                        alert("评价失败");
+                    }
+                }
+            })
+        }
+    </script>
+}

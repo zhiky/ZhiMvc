@@ -1,0 +1,125 @@
+﻿
+@{
+    ViewBag.Title = "Show";
+}
+
+<h2>商城管理</h2>
+<table>
+    <tr>
+        <td><input id="timeone" type="text" /></td>
+        <td><input id="timetwo" type="text" /></td>
+        <td><input id="names" type="text" /></td>
+        <td><select id="typeid"></select></td>
+        <td><input id="Button1" type="button" value="查询" onclick="Show(1)" /></td>
+    </tr>
+</table>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>商品图片</th>
+            <th>商品名称</th>
+            <th>评价用户</th>
+            <th>用户评价</th>
+            <th>评价时间</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody id="tb"></tbody>
+</table>
+<table class="table">
+    <tr>
+        <td>总记录<span id="TotalCount">0</span>条</td>
+        <td>共有<span id="TotalPage">1</span>页</td>
+        <td>当前<span id="CurrentPage">1</span>页</td>
+        <td><a href="javascript:;" onclick="Show(1);">首页</a></td>
+        <td><a href="javascript:;" onclick="Show(CurrentPage - 1);">上一页</a></td>
+        <td><a href="javascript:;" onclick="Show(CurrentPage + 1);">下一页</a></td>
+        <td><a href="javascript:;" onclick="Show(TotalPage);">尾页</a></td>
+    </tr>
+</table>
+@section scripts{
+    <script>
+
+        var PageSize = 2;
+        var CurrentPage = 1;
+        var TotalPage = 1;
+
+        //文档就绪函数
+        $(function () {
+            bang();
+        })
+        function bang() {
+            $.ajax({
+                url: "http://localhost:51828/api/bang",
+                type: "get",
+                dataType: "json",
+                success: function (d) {
+                    $("#typeid").empty();
+                    $("#typeid").append("<option value=0>-请选择-</option>")
+                    $(d).each(function () {
+                        var opt = "<option value=" + this.Tid + ">" + this.Ttpenames + "</option>"
+                        $("#typeid").append(opt);
+                    })
+                    Show(1);
+                }
+            })
+        }
+        //显示
+        function Show(page) {
+            var obj = {};
+            obj.Atime = $("#tiemone").val();
+            obj.Atime = $("#tiemtwo").val();
+            obj.Apname = $("#name").val();
+            obj.Amessage = $("#typeid").val();
+
+            obj.index = page;
+            obj.PageSize = PageSize;
+
+            $.ajax({
+                url: "http://localhost:51828/api/stu",
+                type: "get",
+                dataType: "json",
+                data: obj,
+                success: function (d) {
+                    $("#TotalCount").text(d.TotalCount);
+                    $("#TotalPage").text(d.TotalPage);
+                    $("#CurrentPage").text(d.CurrentPage);
+                    CurrentPage = d.CurrentPage;
+                    TotalPage = d.TotalPage;
+
+                    $("#tb").empty();
+                    $(d.changpianxinxis).each(function () {
+                        var line = "<tr>"
+                            + "<td>" + this.Aid + "</td>"
+                            + "<td><img src='" + this.Aphoto + "' alt='' width='100'/></td>"
+                            + "<td>" + this.Apname + "</td>"
+                            + "<td>" + this.Auname + "</td>"
+                            + "<td>" + this.AssessTypes.Ttpenames + "</td>"
+                            + "<td>" + this.Rmodel.Rinfo + "</td>"
+                            + "<td>" + this.Atime + "</td>"
+                            + "<td>" + '<a href=/stu/Add/' + this.Rid + '>回复</a>' + "</td>"
+                            + "<td>" + "<a onclick='Del(" + this.Cid + ")'>删除评价</a>" + "</td>"
+                            + "</tr>"
+                        $("#tb").append(line);
+                    })
+                }
+            })
+        }
+        //删除
+        function Del(id) {
+            $.ajax({
+                url: "http://localhost:51828/api/stu/" + id,
+                type: "delete",
+                dataType: "json",
+                success: function (d) {
+                    if (d > 0) {
+                        alert("删除成功");
+                        location.href = '/stu/Show';
+                    } else {
+                        alert("删除失败");
+                    }
+                }
+            })
+        }
+    </script>
+}

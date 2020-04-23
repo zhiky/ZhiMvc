@@ -1,0 +1,37 @@
+﻿
+@{
+    ViewBag.Title = "Add";
+}
+
+<h2>回复</h2>
+<tr>
+    <td>回复内容(我):</td>
+    <td><input id="gong" type="text" /></td>
+</tr>
+<tr>
+    <td><input id="Button1" type="button" value="确定" onclick="Add()" /></td>
+</tr>
+@section scripts{
+    <script>
+        //添加
+        function Add() {
+            var obj = {};
+            obj.Rinfo = $("#Rinfo").val();
+            $.ajax({
+                url: "http://localhost:51828/api/stu",
+                type: "post",
+                dataType: "json",
+                data: obj,
+                success: function (d) {
+                    if (d > 0) {
+                        alert("回复成功");
+                        filUpoad();
+                        location.href = '/User/Show';
+                    } else {
+                        alert("回复失败");
+                    }
+                }
+            })
+        }
+    </script>
+}
